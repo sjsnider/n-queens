@@ -131,13 +131,21 @@
 
     //Custom method to check if there is a conflict (accepts an array)
     conflictCheck: function(arr){
-      var result;
+      var count = 0;
+      for (var x=0; x<arr.length;x++){
+        if(arr[x]){
+          count++;
+        }
+        if (count === 2){
+          return true;
+        }
+      }
+      return false;
+      // result = _.reduce(arr, function(a, b){
+      //   return a+b;
+      // });
 
-      result = _.reduce(arr, function(a, b){
-        return a+b;
-      });
-
-      return result > 1;
+      // return result > 1;
     },
 
     // Major Diagonals - go from top-left to bottom-right
