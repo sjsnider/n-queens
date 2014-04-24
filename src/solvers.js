@@ -10,15 +10,21 @@
 // (There are also optimizations that will allow you to skip a lot of the dead search space)
 // take a look at solversSpec.js to see what the tests are expecting
 
-
+var solutionStorage = {};
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 window.findNRooksSolutionHelper = function(n){
-
   var startingArray = [];
   var board, row, tempBoard;
   var resultsArray = [[[1]]];
-
-  for (var i=1;i<n;i++){
+  var startIndex = 1;
+  var maxKey, keys;
+  keys = Object.keys(solutionStorage);
+  if (keys.length){
+    maxKey = Math.max.apply(this, keys);
+    resultsArray = solutionStorage[maxKey];
+    startIndex = maxKey;
+  }
+  for (var i=startIndex;i<n;i++){
     startingArray = resultsArray;
     resultsArray = [];
     for (var bIndex=0; bIndex<startingArray.length; bIndex++){
@@ -32,8 +38,17 @@ window.findNRooksSolutionHelper = function(n){
         resultsArray.push(tempBoard);
       }
     }
+
+    if(!((i+1) in solutionStorage)){
+      solutionStorage[i+1]= resultsArray;
+    }
   }
-  return resultsArray;
+
+  if(!(n in solutionStorage)){
+    solutionStorage[n]= resultsArray;
+  }
+
+  return solutionStorage[n];
 };
 window.findNRooksSolution = function(n) {
 
@@ -73,19 +88,22 @@ window.countNRooksSolutions = function(n) {
 
 
 window.findNQueensHelper = function(n){
-  // debugger;
 
 
   var rooks = window.findNRooksSolutionHelper(n);
   var results = [];
   var board;
   var conflict;
-  console.log(rooks);
-  // debugger;
   for (var i = 0; i<rooks.length; i++){
-    console.log(rooks[i], i);
     board = new Board(rooks[i]);
-    conflict = board.hasAnyQueensConflicts();
+
+    conflict = board.hasAnyMajorDiagonalConflicts();
+
+    if(!conflict){
+      conflict = board.hasAnyMinorDiagonalConflicts();
+    }
+
+
     if(!conflict){
       results.push(rooks[i]);
     }
@@ -115,12 +133,13 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-
   var count;
-
-  var results = window.findNQueensHelper(n);
-  count = results.length;
-
+  if (n===0){
+    count = 1;
+  } else {
+    var results = window.findNQueensHelper(n);
+    count = results.length;
+  }
 
   console.log('Number of solutions for ' + n + ' queens:', count);
   return count;
