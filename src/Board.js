@@ -203,13 +203,19 @@
       var rows = this.rows();
       var index = minorDiagonalColumnIndexAtFirstRow;
       var results = [];
-
-      //set initial position of the first value based on index provided;
-      var rowPos = 0;
-      var colPos = index;
+      var rowPos;
+      var colPos;
 
       var n = this.attributes.n;
-
+      //set initial position of the first value based on index provided;
+      if (index<n){
+        rowPos = 0;
+        colPos = index;
+      }
+      else {
+        colPos = n-1;
+        rowPos = index-colPos;
+      }
       //calculate the max number of diagonals for n
       var diagonals = (n-1)*2+1;
 
@@ -231,7 +237,7 @@
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-
+      // debugger;
       //calculate the number of diagonals for an n square
       var diagonals = (this.attributes.n*2)-1;
 
